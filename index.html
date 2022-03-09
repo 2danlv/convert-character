@@ -1,0 +1,214 @@
+<html>
+   <head>
+      <title>Chuong Trinh Chuyen Van Ban</title>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+      <script language="JavaScript1.2" src="js/vietuni_vn.js" type='text/javascript'></script>
+      <script language="JavaScript1.2" src="js/vumods_vn.js" type='text/javascript'></script>
+      <script language="JavaScript1.2" src="js/vumaps_vn.js" type='text/javascript'></script>
+      <script language="JavaScript1.2" src="js/vumaps2_vn.js" type='text/javascript'></script>
+      <SCRIPT>
+         function initVU (form) {
+           for (var i=1; i<maps.length; i++) {
+             var mstr = maps.names[i];
+             var sel = (i==1);
+             form.curmap.options[i-1] = new Option(mstr, mstr, sel, sel);
+             form.destmap.options[i-1] = new Option(mstr, mstr, sel, sel);
+           }
+           setTypingMode(1);
+           form.TELEX.onclick= function(){ setTypingMode(1); }
+           form.VNI.onclick= function(){ setTypingMode(2); }
+           form.VIQR.onclick= function(){ setTypingMode(3); }
+           form.LOAN.onclick= function(){ setTypingMode(4); }
+           form.OFF.onclick= function(){ setTypingMode(0); }
+           form.onclick= function(){
+             this.spella.disabled = !(this.TELEX.checked || this.LOAN.checked);
+             return true;
+           }
+           form.checkAccent.onclick= function(){
+             convertAtOnce(this.form.vArea);
+             return true;
+           }
+           form.spella.onclick= function(){
+             loadSpellA(this.checked);
+             return true;
+           }
+           form.spellb.onclick= function(){
+             loadSpellB(this.form.vArea);
+             return true;
+           }
+           form.replace.onclick= function(){
+             loadSpellB(this.form.vArea, 1);
+             return true;
+           }
+           form.curmap.onclick= function() {
+             setCharMap(this.options[this.options.selectedIndex].value);
+             return true;
+           }
+           form.detectEnc.onclick= function(){
+             var id= detectMap(this.form.vArea);
+             if (id) this.form.curmap.options[id-1].selected=true;
+             return true;
+           }
+           form.convertTo.onclick= function() {
+             var sel = this.form.destmap.options.selectedIndex;
+             var destID= this.form.destmap.options[sel].value;
+             var converted= convertTo(this.form.vArea, destID);
+             if (!converted) return true;
+             this.form.curmap.options[sel].selected=true;
+             setCharMap(destID);
+             return true;
+           }
+           form.xoa.onclick= function() {
+             this.form.reset();
+             setTypingMode(1);
+             setCharMap("UNICODE");
+           }
+           form.toUni.onclick= function() {
+             if (!convertArea(this.form.vArea, "UNICODE")) {
+               return alert("Xin loi , khong xac dinh duoc ma , xin vui long thu lai .");
+             }
+             this.form.curmap.options[0].selected=true;
+             setCharMap("UNICODE");
+             return true;
+           }
+           form.correction.onclick= function() {
+             correctArea(this.form.vArea);
+             return true;
+           }
+           form.preview.onclick= function() {
+             preview(this.form.vArea);
+             return true;
+           }
+           form.save.onclick= function() {
+             saveFile(this.form.vArea);
+             return true;
+           }
+           return true;
+         }
+         function preview(txtarea) {
+           var win = open("");
+           if (!win || !txtarea) return;
+           if (!txtarea.form.curmap.options[0].selected) { win.document.charset= "iso-8859-1"; }
+           var closebutton= "<p><center><a href='javascript:close();'><b>Đóng cửa sổ này</b></a></center>"
+           win.document.open();
+           win.document.write(txtarea.value+ closebutton);
+           win.document.close();
+         }
+         function saveFile(txtarea) {
+           if (!document.all) {
+             alert("Xin loi, trinh duyet web cua ban khong cho phep thuc hien thao tac nay ...");
+             return;
+           }
+           var win = open("", "", "resizable=no,width=500,height=300");
+           if (!txtarea.form.curmap.options[0].selected) { win.document.charset= "iso-8859-1"; }
+           win.document.body.innerText = txtarea.value;
+           win.document.execCommand("SaveAs", null, "vanban.txt");
+           win.close();
+         }
+      </SCRIPT>
+   </head>
+   <body  onload="initVU(document.myForm);">
+      <h1 style="font-family: Verdana,Arial; font-size: 20pt;color:#FF3399">Chương trình gõ và chuyển mã văn bản tiếng Việt</h1>
+      <table style="FILTER: glow(color=6699ff); FONT: bold 20px verdana" id="table4">
+         <tr>
+            <td style="font-family: Verdana,Arial; font-size: 10pt">
+               <font color="#FF3399" face="Tahoma" size="2">
+                  <p align="center"><u>Cách sử dụng</u> :
+               </font>
+            </td>
+         </tr>
+      </table>
+      <ul>
+         <li>
+            <p align="justify"><font face="Tahoma" size="2">Các bạn có thể gõ văn bản
+               trực tiếp ở đây mà không cần dùng bất cứ bộ gõ nào . Nếu bộ gõ bạn đang dùng
+               có cùng kiểu gõ với chương trình thì có thể bạn không cần tắt bộ gõ . Còn
+               nếu dùng khác kiểu gõ xin các bạn vui lòng tắt bộ gõ , có thể sẽ không thấy
+               được tiếng Việt . Để thay đổi kiểu gõ xin các bạn vui lòng chọn tương ứng
+               với cách gõ của bạn .</font>
+         </li>
+         <li>
+            <p align="justify"><font face="Tahoma" size="2">Kiểu gõ <b>
+               <font color="#FF3399">Tự Động</font></b> ( chọn mặc định ) là kiểu gõ có thể gõ bằng bất cứ
+               cách nào cũng được : <b><font color="#6699FF">VNI , VIQR , TELEX</font></b> .</font>
+         </li>
+         <li>
+            <p align="justify"><font face="Tahoma" size="2">Để chuyển mã văn bản , các
+               bạn vui lòng <b><font color="#6699FF">Copy</font></b> một đoạn văn bản cần chuyển sau đó
+               <b><font color="#6699FF">Paste</font></b> vào vùng nhập văn
+               bản . Để nhận dạng mã các bạn chọn <font color="#FF3399"><b>Nhận dạng mã</b></font>
+               , để chuyển mã các bạn vui lòng chọn <b><font color="#FF3399">Đổi sang
+               </font></b>. Chương trình sẽ tự động chuyển đổi mã cho các bạn . Ngoài ra
+               các bạn còn có thể chọn để ghuyển sang mã tương ứng .</font>
+         </li>
+      </ul>
+      <br>
+      <form name="myForm" method="POST" action="none">
+         <div align="center">
+            <table bgcolor="#99CCFF" cellpadding=10>
+               <tr>
+                  <td>
+                     <p align="center">
+                        <span style="color:#FFFFFF; height:25">
+                        <b>Bạn vui lòng gõ hoặc Paste văn bản vào ô bên dưới .</b>
+                        </span>
+                     </p>
+                     <table cellpadding='1' cellspacing='0' width="578">
+                        <tr>
+                           <td colspan=4>
+                              <textarea name="vArea" rows="24" cols="93" onkeyup="initTyper(this);" style="font-family: Tahoma; font-size: 10pt"></textarea>
+                           </td>
+                        </tr>
+                        <tr bgcolor="#e0e0e0">
+                           <td class="bold" colspan='4'>
+                              <input type=radio name="switch" id="LOAN" value="LOAN" checked>Tự động &nbsp;
+                              <input type=checkbox name="spella" value="ON"> Kiểm tra chính tả và tự
+                              động sửa lại từ tiếng Anh bị lỗi
+                              &nbsp; &nbsp; &nbsp;
+                           </td>
+                        </tr>
+                        <tr>
+                           <td class="bold" bgcolor="#e0e0e0">
+                              <input type=radio name="switch" id="VNI" value="VNI">Kiểu VNI<br>
+                              <input type=radio name="switch" id="VIQR" value="VIQR">Kiểu VIQR<br>
+                              <input type=radio name="switch" id="TELEX" value="TELEX">Kiểu TELEX<br>
+                              <input type=radio name="switch" id="OFF" value="OFF">Tắt bộ gõ
+                           </td>
+                           <td colspan=3 valign='center'>
+                              <table cellspacing='1' cellpadding='2' border='0' width='100%'>
+                                 <tr bgcolor="#e0e0e0">
+                                    <td>
+                                       <b>&nbsp;Mã đang dùng:&nbsp;</b>
+                                       <select name="curmap" height=15></select>
+                                       <input type="button" value="Đổi sang" name="convertTo">
+                                       <select name="destmap"></select>
+                                    </td>
+                                 </tr>
+                                 <tr bgcolor="#e0e0e0">
+                                    <td>
+                                       <input type="button" value="Nhận dạng mã" name="detectEnc">
+                                       <input type="button" value="To UNICODE" name="toUni">
+                                       <!-- <input type="button" value="Phóng to" name="preview">&nbsp; -->
+                                       <input type="button" value="Soát dấu" name="checkAccent">
+                                    </td>
+                                 </tr>
+                                 <tr bgcolor="#e0e0e0">
+                                    <td>
+                                       &nbsp;<input type="button" value="Sửa lại dấu" name="correction">
+                                       <input type="button" value="Sửa chính tả" name="spellb">
+                                       <input type="button" value="Tìm & sửa" name="replace">&nbsp;<input type="button" value="Lưu file" name="save">
+                                       <input type="button" value="Xoá" name="xoa">
+                                    </td>
+                                 </tr>
+                              </table>
+                           </td>
+                        </tr>
+                     </table>
+                  </td>
+               </tr>
+            </table>
+         </div>
+      </form>
+   </body>
+   
+</html>
